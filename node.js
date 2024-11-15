@@ -84,6 +84,7 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/region', async (req, res) => {
+  console.log("hk4g4")
   const { username, region} = req.body;
 
   db.query('UPDATE users SET region = ? WHERE username = ?', [region, username], (err, result) => {
@@ -94,6 +95,49 @@ app.post('/region', async (req, res) => {
       return res.status(404).send('使用者不存在');
     }
     res.status(200).send('區域更新成功');
+  });
+});
+
+app.post('/charac', async (req, res) => {
+  const { username, charac} = req.body;
+
+  db.query('UPDATE users SET charac = ? WHERE username = ?', [charac, username], (err, result) => {
+    if (err) {
+      return res.status(500).send('更新失敗');
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).send('使用者不存在');
+    }
+    res.status(200).send('角色更新成功');
+  });
+});
+
+app.get('/package', (req, res) => {
+  const username = req.query.username.trim().toLowerCase();
+  const sql = 'SELECT decorate1,decorate2,decorate3,decorate4,decorate5,decorate6,decorate7,decorate8,decorate9,decorate10 FROM package WHERE username = ?';
+  db.query(sql, [username], (err, results) => {
+    if (err) {
+      res.status(500).send('資料庫查詢失敗');
+      console.log('error')
+    } else {
+      // 取得第一筆資料（如果有）
+      const data = results[0];
+        
+      // 將資料庫中的數字欄位存儲到陣列 arr
+      const arr = [
+        data.decorate1,
+        data.decorate2,
+        data.decorate3,
+        data.decorate4,
+        data.decorate5,
+        data.decorate6,
+        data.decorate7,
+        data.decorate8,
+        data.decorate9,
+        data.decorate10
+      ];
+      res.json(arr);
+    }
   });
 });
 
