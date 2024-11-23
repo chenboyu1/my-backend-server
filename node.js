@@ -15,6 +15,11 @@ const db = mysql.createConnection({
   database: 'login'  // 你的資料庫名稱
 });
 /*
+柏魚的(虛擬機)的:
+host: 'localhost',
+  user: 'root',
+  password: 'dbms41126', // 你的 MySQL 密碼
+  database: 'login'  // 你的資料庫名稱
 冠尼的:
 host: '140.136.151.129',
   user: 'LeeRain',
