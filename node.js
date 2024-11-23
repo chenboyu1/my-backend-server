@@ -9,12 +9,18 @@ app.use(bodyParser.json());
 
 // 設定 MySQL 連接
 const db = mysql.createConnection({
-  host: '140.136.151.129',
-  user: 'LeeRain',
-  password: 'Lee1979', // 你的 MySQL 密碼
+  host: 'localhost',
+  user: 'root',
+  password: 'dbms41126', // 你的 MySQL 密碼
   database: 'login'  // 你的資料庫名稱
 });
 /*
+冠尼的:
+host: '140.136.151.129',
+  user: 'LeeRain',
+  password: 'Lee1979', // 你的 MySQL 密碼
+  database: 'login'  // 你的資料庫名稱
+蝦子的:
 host: '140.136.151.129',
   user: 'shrimp',
   password: 'nm9487', // 你的 MySQL 密碼
@@ -265,7 +271,6 @@ app.get('/food', (req, res) => {
     } else {
       // 取得第一筆資料（如果有）
       const data = results[0];
-        
       // 將資料庫中的數字欄位存儲到陣列 arr
       const arr = [
         data.food1,
