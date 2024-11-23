@@ -186,6 +186,49 @@ app.post('/charac', async (req, res) => {
   });
 });
 
+app.get('/getDecorations', (req, res) => {
+  const username = req.query.username; // 獲取請求參數中的用戶名
+
+  if (!username) {
+    return res.status(400).send('缺少 username 參數');
+  }
+
+  const sql = `
+    SELECT decorate1, decorate2, decorate3, decorate4, decorate5, 
+           decorate6, decorate7, decorate8, decorate9, decorate10
+    FROM package
+    WHERE username = ?`;
+
+  db.query(sql, [username], (err, results) => {
+    if (err) {
+      console.error('資料庫查詢失敗：', err);
+      return res.status(500).send('資料庫查詢失敗');
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send('使用者不存在');
+    }
+
+    // 返回裝飾品數值作為 JSON
+    const decorations = results[0];
+    res.status(200).json({
+      username: username,
+      decorations: [
+        decorations.decorate1,
+        decorations.decorate2,
+        decorations.decorate3,
+        decorations.decorate4,
+        decorations.decorate5,
+        decorations.decorate6,
+        decorations.decorate7,
+        decorations.decorate8,
+        decorations.decorate9,
+        decorations.decorate10
+      ]
+    });
+  });
+});//將數值從資料庫抓到前端使用
+
 app.post('/shop_dec', async (req, res) => {
   const { username, decorations } = req.body;
 
