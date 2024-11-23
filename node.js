@@ -14,6 +14,12 @@ const db = mysql.createConnection({
   password: 'dbms41126', // 你的 MySQL 密碼
   database: 'login'  // 你的資料庫名稱
 });
+/*
+host: '140.136.151.129',
+  user: 'shrimp',
+  password: 'nm9487', // 你的 MySQL 密碼
+  database: 'login'  // 你的資料庫名稱
+*/
 
 // 連接 MySQL
 db.connect((err) => {
@@ -209,6 +215,35 @@ app.get('/package', (req, res) => {
         data.decorate8,
         data.decorate9,
         data.decorate10
+      ];
+      res.json(arr);
+    }
+  });
+});
+
+app.get('/food', (req, res) => {
+  const username = req.query.username.trim().toLowerCase();
+  const sql = 'SELECT food1, food2, food3, food4, food5, food6, food7, food8, food9, food10 FROM food WHERE username = ?';
+  db.query(sql, [username], (err, results) => {
+    if (err) {
+      res.status(500).send('資料庫查詢失敗');
+      console.log('error')
+    } else {
+      // 取得第一筆資料（如果有）
+      const data = results[0];
+        
+      // 將資料庫中的數字欄位存儲到陣列 arr
+      const arr = [
+        data.food1,
+        data.food2,
+        data.food3,
+        data.food4,
+        data.food5,
+        data.food6,
+        data.food7,
+        data.food8,
+        data.food9,
+        data.food10
       ];
       res.json(arr);
     }
