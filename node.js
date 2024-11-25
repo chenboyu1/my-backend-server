@@ -30,6 +30,12 @@ host: '140.136.151.129',
   user: 'shrimp',
   password: 'nm9487', // 你的 MySQL 密碼
   database: 'login'  // 你的資料庫名稱
+兔子的:
+host: '140.136.151.129',
+  user: 'cha',
+  password: 'jt930825', // 你的 MySQL 密碼
+  database: 'login'  // 你的資料庫名稱
+
 */
 
 // 連接 MySQL
@@ -237,35 +243,6 @@ app.post('/shop_dec', async (req, res) => {
   });
 });//從商店將裝飾品數值推入到資料庫
 
-app.get('/package', (req, res) => {
-  const username = req.query.username.trim().toLowerCase();
-  const sql = 'SELECT decorate1,decorate2,decorate3,decorate4,decorate5,decorate6,decorate7,decorate8,decorate9,decorate10 FROM package WHERE username = ?';
-  db.query(sql, [username], (err, results) => {
-    if (err) {
-      res.status(500).send('資料庫查詢失敗');
-      console.log('error')
-    } else {
-      // 取得第一筆資料（如果有）
-      const data = results[0];
-        
-      // 將資料庫中的數字欄位存儲到陣列 arr
-      const arr = [
-        data.decorate1,
-        data.decorate2,
-        data.decorate3,
-        data.decorate4,
-        data.decorate5,
-        data.decorate6,
-        data.decorate7,
-        data.decorate8,
-        data.decorate9,
-        data.decorate10
-      ];
-      res.json(arr);
-    }
-  });
-});
-
 app.get('/food', (req, res) => {
   const username = req.query.username.trim().toLowerCase();
   const sql = 'SELECT food1, food2, food3, food4, food5, food6, food7, food8, food9, food10 FROM food WHERE username = ?';
@@ -290,6 +267,44 @@ app.get('/food', (req, res) => {
         data.food10
       ];
       res.json(arr);
+    }
+  });
+});
+
+
+//每日任務加錢
+app.post('/dailymission', async (req, res) => {
+  const { username, timer, timer2,timer3,timer4} = req.body;
+  console.log(req.body)
+  db.query('UPDATE money SET timer = ?, timer2 = ?, timer3 = ?, timer4 = ? WHERE username = ?', [timer, timer2, timer3, timer4,username], (err, result) => {
+    if (err) {
+      return res.status(500).send('更新失敗');
+    }
+    else{
+      return res.status(200).send('完成任務');
+    }
+  });
+});
+
+app.get('/dailymission', (req, res) => {
+  const username = req.query.username.trim().toLowerCase();
+  const sql = 'SELECT timer,timer2,timer3,timer4 FROM Money WHERE username = ?';
+  db.query(sql, [username], (err, results) => {
+    if (err) {
+      res.status(500).send('資料庫查詢失敗');
+      console.log('error')
+    } else {
+      // 取得第一筆資料（如果有）
+      const data = results[0];
+      // 將資料庫中的數字欄位存儲到陣列 arr
+      const arr = [
+        data.timer,
+        data.timer2,
+        data.timer3,
+        data.timer4
+      ];
+      res.json(arr);
+      console.log(arr)
     }
   });
 });
