@@ -212,11 +212,20 @@ app.post('/charac', async (req, res) => {
 app.post('/shop_dec', async (req, res) => {
   const { username, decorations } = req.body;
 
+  db.query('UPDATE users SET decorations = ? WHERE username = ?', [decorations, username], (err, result) => {
+    if (err) {
+      return res.status(500).send('更新失敗');
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).send('使用者不存在');
+    }
+    res.status(200).send('角色更新成功');
+  });
+  /*
   // 檢查請求資料是否有效
   if (!username || !decorations || !Array.isArray(decorations) || decorations.length !== 10) {
     return res.status(400).send('請求參數錯誤');
   }
-
   // 構建 SQL 語句
   const sql = `
     UPDATE package 
@@ -240,7 +249,7 @@ app.post('/shop_dec', async (req, res) => {
     }
 
     res.status(200).send('裝飾品更新成功');
-  });
+  });*/
 });//從商店將裝飾品數值推入到資料庫
 
 app.get('/food', (req, res) => {
