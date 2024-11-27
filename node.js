@@ -106,12 +106,12 @@ app.post('/login', (req, res) => {
     });
   });
 });
-//儲存地區
+//儲存地區(縣市、區域)
 app.post('/region', async (req, res) => {
-  console.log("hk4g4")
-  const { username, region} = req.body;
+  //console.log("hk4g4")
+  const { username, country, region} = req.body;
 
-  db.query('UPDATE users SET region = ? WHERE username = ?', [region, username], (err, result) => {
+  db.query('UPDATE users SET country = ? region = ? WHERE username = ?', [region, username], (err, result) => {
     if (err) {
       return res.status(500).send('更新失敗');
     }
@@ -119,6 +119,26 @@ app.post('/region', async (req, res) => {
       return res.status(404).send('使用者不存在');
     }
     res.status(200).send('區域更新成功');
+  });
+});
+app.get('/region', async (req, res) => {
+  const username = req.query.username.trim().toLowerCase();
+
+  const sql = 'SELECT country, region FROM users WHERE username = ?';
+  db.query(sql, [username], (err, results) => {
+    if (err) {
+      res.status(500).send('資料庫查詢失敗');
+      console.log('error')
+    } else {
+      const data = results[0];
+      const arr = [
+        data.country,
+        data.region,
+      ]
+      res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+      res.json(arr);
+      console.log(arr);
+    }
   });
 });
 //儲存角色編號
