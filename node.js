@@ -302,12 +302,26 @@ app.post('/shop_food', async (req, res) => {
   const { username, foods } = req.body;
   // 檢查請求資料是否有效
   if (!username || !foods || !Array.isArray(foods) || foods.length !== 10) {
+    console.log(foods);
+    if(!username){
+      console.log('1');
+    }
+    if(!foods){
+      console.log('2');
+    }
+    if(!Array.isArray(foods)){
+      console.log('3');
+    }
+    if(foods.length !== 10){
+      console.log('4');
+    }
+    
     console.log('請求參數錯誤');
     return res.status(400).send('請求參數錯誤');
   }
   // 構建 SQL 語句
   const sql = `
-    UPDATE package 
+    UPDATE food 
     SET 
       food1 = ?, food2 = ?, food3 = ?, food4 = ?, food5 = ?, 
       food6 = ?, food7 = ?, food8 = ?, food9 = ?, food10 = ?
