@@ -383,6 +383,20 @@ app.get('/dailymission', (req, res) => {
   });
 });
 
+app.post('/money', async (req, res) => {
+  const { username, money} = req.body;
+
+  db.query('UPDATE users SET money = ? WHERE username = ?', [money, username], (err, result) => {
+    if (err) {
+      return res.status(500).send('更新失敗');
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).send('使用者不存在');
+    }
+    res.status(200).send('金錢更新成功');
+  });
+});//從金錢數值推入到資料庫
+
 // 啟動伺服器
 const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => {
