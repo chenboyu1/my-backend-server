@@ -147,20 +147,27 @@ app.post('/decoration', async (req, res) => {
       return res.status(404).send('使用者不存在');
     }
     res.status(200).send('裝飾更新成功');
+    console.log('更新莊市')
   });
 });
-//取得角色編號
-app.get('/charac', async (req, res) => {
+//取得角色編號,裝飾編號,金幣
+app.get('/basicData', async (req, res) => {
   const username = req.query.username.trim().toLowerCase();
 
-  const charac = 'SELECT charac FROM users WHERE username = ?';
-  db.query(charac, [username], (err, results) => {
+  const sql = 'SELECT charac, decorate, money FROM users WHERE username = ?';
+  db.query(sql, [username], (err, results) => {
     if (err) {
       res.status(500).send('資料庫查詢失敗');
       console.log('error')
     } else {
-      res.json(results[0].charac);
-      //console.log(results[0].charac);
+      const data = results[0];
+      const arr = [
+        data.charac,
+        data.decorate,
+        data.money
+      ]
+      res.json(arr);
+      console.log(arr);
     }
   });
 });
@@ -210,20 +217,12 @@ app.post('/charac', async (req, res) => {
 });
 
 app.post('/shop_dec', async (req, res) => {
+  console.log('abc')
   const { username, decorations } = req.body;
-
-  db.query('UPDATE users SET decorations = ? WHERE username = ?', [decorations, username], (err, result) => {
-    if (err) {
-      return res.status(500).send('更新失敗');
-    }
-    if (result.affectedRows === 0) {
-      return res.status(404).send('使用者不存在');
-    }
-    res.status(200).send('角色更新成功');
-  });
-  /*
+  console.log('abc')
   // 檢查請求資料是否有效
   if (!username || !decorations || !Array.isArray(decorations) || decorations.length !== 10) {
+    console.log('請求參數錯誤');
     return res.status(400).send('請求參數錯誤');
   }
   // 構建 SQL 語句
@@ -236,6 +235,7 @@ app.post('/shop_dec', async (req, res) => {
 
   // 將裝飾品數值作為參數，並加上用戶名
   const params = [...decorations, username];
+  console.log(params)
 
   // 更新資料庫
   db.query(sql, params, (err, result) => {
@@ -249,7 +249,7 @@ app.post('/shop_dec', async (req, res) => {
     }
 
     res.status(200).send('裝飾品更新成功');
-  });*/
+  });
 });//從商店將裝飾品數值推入到資料庫
 
 app.get('/food', (req, res) => {
@@ -313,7 +313,7 @@ app.get('/dailymission', (req, res) => {
         data.timer4
       ];
       res.json(arr);
-      console.log(arr)
+      //console.log(arr)
     }
   });
 });
