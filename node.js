@@ -110,8 +110,8 @@ app.post('/login', (req, res) => {
 app.post('/region', async (req, res) => {
   //console.log("hk4g4")
   const { username, country, region} = req.body;
-
-  db.query('UPDATE users SET country = ? region = ? WHERE username = ?', [region, username], (err, result) => {
+  console.log(username, country, region)
+  db.query('UPDATE users SET country = ?, region = ? WHERE username = ?', [country, region, username], (err, result) => {
     if (err) {
       return res.status(500).send('更新失敗');
     }
@@ -119,6 +119,7 @@ app.post('/region', async (req, res) => {
       return res.status(404).send('使用者不存在');
     }
     res.status(200).send('區域更新成功');
+    console.log("區域更新成功")
   });
 });
 app.get('/region', async (req, res) => {
