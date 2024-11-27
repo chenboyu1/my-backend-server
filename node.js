@@ -303,12 +303,26 @@ app.post('/shop_food', async (req, res) => {
   const { username, foods } = req.body;
   // 檢查請求資料是否有效
   if (!username || !foods || !Array.isArray(foods) || foods.length !== 10) {
+    console.log(foods);
+    if(!username){
+      console.log('1');
+    }
+    if(!foods){
+      console.log('2');
+    }
+    if(!Array.isArray(foods)){
+      console.log('3');
+    }
+    if(foods.length !== 10){
+      console.log('4');
+    }
+    
     console.log('請求參數錯誤');
     return res.status(400).send('請求參數錯誤');
   }
   // 構建 SQL 語句
   const sql = `
-    UPDATE package 
+    UPDATE food 
     SET 
       food1 = ?, food2 = ?, food3 = ?, food4 = ?, food5 = ?, 
       food6 = ?, food7 = ?, food8 = ?, food9 = ?, food10 = ?
@@ -369,6 +383,20 @@ app.get('/dailymission', (req, res) => {
     }
   });
 });
+
+app.post('/money', async (req, res) => {
+  const { username, money} = req.body;
+
+  db.query('UPDATE users SET money = ? WHERE username = ?', [money, username], (err, result) => {
+    if (err) {
+      return res.status(500).send('更新失敗');
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).send('使用者不存在');
+    }
+    res.status(200).send('金錢更新成功');
+  });
+});//從金錢數值推入到資料庫
 
 // 啟動伺服器
 const PORT = 3000;
