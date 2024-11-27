@@ -9,9 +9,9 @@ app.use(bodyParser.json());
 
 // 設定 MySQL 連接
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'dbms41126', // 你的 MySQL 密碼
+  host: '140.136.151.129',
+  user: 'LeeRain',
+  password: 'Lee1979', // 你的 MySQL 密碼
   database: 'login'  // 你的資料庫名稱
 });
 /*
@@ -279,9 +279,9 @@ app.get('/food', (req, res) => {
 });
 
 app.post('/shop_food', async (req, res) => {
-  const { username, decorations } = req.body;
+  const { username, foods } = req.body;
   // 檢查請求資料是否有效
-  if (!username || !decorations || !Array.isArray(decorations) || decorations.length !== 10) {
+  if (!username || !foods || !Array.isArray(foods) || foods.length !== 10) {
     console.log('請求參數錯誤');
     return res.status(400).send('請求參數錯誤');
   }
@@ -295,7 +295,7 @@ app.post('/shop_food', async (req, res) => {
 
   // 將裝飾品數值作為參數，並加上用戶名
   const params = [...foods, username];
-  console.log(params)
+  console.log('更新參數：', params);
 
   // 更新資料庫
   db.query(sql, params, (err, result) => {
@@ -310,7 +310,7 @@ app.post('/shop_food', async (req, res) => {
 
     res.status(200).send('食物更新成功');
   });
-});//從商店將裝飾品數值推入到資料庫
+});//從商店將食物數值推入到資料庫
 
 //每日任務加錢
 app.post('/dailymission', async (req, res) => {
