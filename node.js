@@ -9,9 +9,9 @@ app.use(bodyParser.json());
 
 // 設定 MySQL 連接
 const db = mysql.createConnection({
-  host: '140.136.151.129',
-  user: 'LeeRain',
-  password: 'Lee1979', // 你的 MySQL 密碼
+  host: 'localhost',
+  user: 'root',
+  password: 'dbms41126', // 你的 MySQL 密碼
   database: 'login'  // 你的資料庫名稱
 });
 /*
@@ -171,11 +171,11 @@ app.post('/decoration', async (req, res) => {
     console.log('更新莊市')
   });
 });
-//取得角色編號,裝飾編號,金幣
+//取得角色編號,裝飾編號,金幣,好感度
 app.get('/basicData', async (req, res) => {
   const username = req.query.username.trim().toLowerCase();
 
-  const sql = 'SELECT charac, decorate, money FROM users WHERE username = ?';
+  const sql = 'SELECT charac, decorate, money, affection FROM users WHERE username = ?';
   db.query(sql, [username], (err, results) => {
     if (err) {
       res.status(500).send('資料庫查詢失敗');
@@ -185,7 +185,8 @@ app.get('/basicData', async (req, res) => {
       const arr = [
         data.charac,
         data.decorate,
-        data.money
+        data.money,
+        data.affection
       ]
       res.json(arr);
       console.log(arr);
