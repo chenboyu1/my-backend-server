@@ -173,19 +173,27 @@ app.post('/charac', async (req, res) => {
 });
 //儲存選擇裝飾編號
 app.post('/decoration', async (req, res) => {
-  const { username, decorate} = req.body;
+  const { username, decoration } = req.body;
+  console.log(req.body);
 
-  db.query('UPDATE users SET decorate = ? WHERE username = ?', [decorate, username], (err, result) => {
+  // 檢查請求內容是否正確
+  if (!username || decoration === undefined) {
+    return res.status(400).send('缺少必要參數');
+  }
+
+  // SQL 更新操作
+  db.query('UPDATE users SET decorate = ? WHERE username = ?', [decoration, username], (err, result) => {
     if (err) {
+      console.error('資料庫錯誤:', err); // 輸出詳細錯誤
       return res.status(500).send('更新失敗');
     }
     if (result.affectedRows === 0) {
       return res.status(404).send('使用者不存在');
     }
     res.status(200).send('裝飾更新成功');
-    console.log('更新莊市')
   });
 });
+
 //取得角色編號,裝飾編號,金幣,好感度
 app.get('/basicData', async (req, res) => {
   const username = req.query.username.trim().toLowerCase();
@@ -411,6 +419,20 @@ app.post('/money', async (req, res) => {
       return res.status(404).send('使用者不存在');
     }
     res.status(200).send('金錢更新成功');
+  });
+});//從金錢數值推入到資料庫
+
+app.post('/affection', async (req, res) => {
+  const { username, affection} = req.body;
+
+  db.query('UPDATE users SET affection = ? WHERE username = ?', [affection, username], (err, result) => {
+    if (err) {
+      return res.status(500).send('更新失敗');
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).send('使用者不存在');
+    }
+    res.status(200).send('好感度更新成功');
   });
 });//從金錢數值推入到資料庫
 
