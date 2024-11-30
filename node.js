@@ -49,35 +49,50 @@ db.connect((err) => {
 
 // 註冊路由
 app.post('/register', async (req, res) => {
-  const { username, password} = req.body;
+  const { username, password } = req.body;
 
-  // 確認使用者是否已經註冊
-  db.query('SELECT * FROM users WHERE username = ?', [username], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('伺服器錯誤');
-    }
+  try {
+    // 確認使用者是否已經註冊
+    const [result] = await db.promise().query('SELECT * FROM users WHERE username = ?', [username]);
+
     if (result.length > 0) {
       return res.status(400).send('使用者已存在');
     }
 
     // 加密密碼
-    bcrypt.hash(password, 10, (err, hash) => {
-      if (err) {
-        return res.status(500).send('密碼加密失敗');
-      }
-      region = ' ';
-      charac = 0;
+    const hash = await bcrypt.hash(password, 10);
+
+    // 設定預設值
+    const region = ' ';
+    const charac = 0;
+
+    // 使用 transaction 來保證資料的一致性
+    await db.promise().query('START TRANSACTION');
+
+    try {
       // 將新使用者存入資料庫
-      db.query('INSERT INTO users (username, password, region, charac) VALUES (?, ?, ?, ?)', [username, hash, region, charac], (err, result) => {
-        if (err) {
-          return res.status(500).send('註冊失敗');
-        }
-        res.status(201).send('註冊成功');
-      });
-    });
-  });
+      await db.promise().query('INSERT INTO users (username, password, region, charac) VALUES (?, ?, ?, ?)', [username, hash, region, charac]);
+
+      // 初始化 decorate 資料
+      await db.promise().query('INSERT INTO package (username, decorate1, decorate2, decorate3, decorate4, decorate5, decorate6, decorate7, decorate8, decorate9, decorate10) VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)', [username]);
+      await db.promise().query('INSERT INTO food (username, food1, food2, food3, food4, food5, food6, food7, food8, food9, food10) VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)', [username]);
+
+      // 提交事務
+      await db.promise().query('COMMIT');
+      
+      return res.status(201).send('註冊成功');
+    } catch (err) {
+      // 如果有錯誤，回滾事務
+      await db.promise().query('ROLLBACK');
+      console.error(err);
+      return res.status(500).send('註冊失敗');
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('伺服器錯誤');
+  }
 });
+
 
 // 登入路由
 app.post('/login', (req, res) => {
