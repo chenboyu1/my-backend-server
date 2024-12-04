@@ -76,7 +76,7 @@ app.post('/register', async (req, res) => {
       // 初始化 decorate 資料
       await db.promise().query('INSERT INTO package (username, decorate1, decorate2, decorate3, decorate4, decorate5, decorate6, decorate7, decorate8, decorate9, decorate10) VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)', [username]);
       await db.promise().query('INSERT INTO food (username, food1, food2, food3, food4, food5, food6, food7, food8, food9, food10) VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)', [username]);
-
+      await db.promise().query('INSERT INTO money (username, timer, timer2, timer3, timer4) VALUES (?, 0, 0, 0, 0)', [username])
       // 提交事務
       await db.promise().query('COMMIT');
       
