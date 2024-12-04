@@ -137,25 +137,124 @@ app.post('/region', async (req, res) => {
     console.log("區域更新成功")
   });
 });
+//取得地區、天氣
 app.get('/region', async (req, res) => {
   const username = req.query.username.trim().toLowerCase();
+  console.log("test")
+  try {
+    // 等待第一個查詢完成
+    const sql1 = 'SELECT country, region FROM users WHERE username = ?';
+    const [results1] = await db.promise().query(sql1, [username]);
 
-  const sql = 'SELECT country, region FROM users WHERE username = ?';
-  db.query(sql, [username], (err, results) => {
-    if (err) {
-      res.status(500).send('資料庫查詢失敗');
-      console.log('error')
-    } else {
-      const data = results[0];
-      const arr = [
-        data.country,
-        data.region,
-      ]
-      res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-      res.json(arr);
-      console.log(arr);
+    if (results1.length === 0) {
+      return res.status(404).send('用戶未找到');
     }
-  });
+
+    const data = results1[0];
+
+    // 等待第二個查詢完成
+    const sql2 = 'SELECT Weather FROM weather WHERE CountyName = ? and TownName = ?';
+    const [results2] = await db.promise().query(sql2, [data.country, data.region]);
+
+    if (results2.length === 0) {
+      console.log('天氣資料未找到')
+      return res.status(404).send('天氣資料未找到');
+    }
+    
+    const data2 = results2[0];
+    console.log(data2.Weather)
+    const keywords = {
+      "晴": "weather1",
+      "陰": "weather2",
+      "霧": "weather3",
+      "霾": "weather4",
+      "雨": "weather5"
+  };
+  
+  // 模擬從資料庫獲取的天氣文本
+  const text = data2.Weather;
+
+  // 初始化匹配結果
+  let matchedWeather = "未知天氣"; // 預設值為 "未知天氣"
+
+  // 遍歷關鍵字進行匹配
+  for (const [keyword, output] of Object.entries(keywords)) {
+      const regex = new RegExp(keyword, 'g'); // 'g' 表示全局匹配
+      if (regex.test(text)) {
+          matchedWeather = output;
+          break; // 匹配到後退出循環
+      }
+  }
+  console.log(matchedWeather)
+  // 組合結果
+  const arr = [
+      data.country,
+      data.region,
+      matchedWeather // 匹配結果放這
+  ];
+
+    // 回傳 JSON 數據
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.json(arr);
+    console.log(arr);
+
+  } catch (err) {
+    // 錯誤處理
+    res.status(500).send('資料庫查詢失敗');
+    console.log('error', err);
+  }
+});
+//選完地區後馬上取得天氣
+app.get('/weather', async (req, res) => {
+  const country = req.query.country.trim().toLowerCase();
+  const region = req.query.region.trim().toLowerCase();
+  console.log("test")
+  try {
+    // 等待第二個查詢完成
+    const sql2 = 'SELECT Weather FROM weather WHERE CountyName = ? and TownName = ?';
+    const [results2] = await db.promise().query(sql2, [country, region]);
+
+    if (results2.length === 0) {
+      console.log('天氣資料未找到')
+      return res.status(404).send('天氣資料未找到');
+    }
+    
+    const data2 = results2[0];
+    console.log(data2.Weather)
+    const keywords = {
+      "晴": "weather1",
+      "陰": "weather2",
+      "霧": "weather3",
+      "霾": "weather4",
+      "雨": "weather5"
+  };
+  
+  // 模擬從資料庫獲取的天氣文本
+  const text = data2.Weather;
+
+  // 初始化匹配結果
+  let matchedWeather = "未知天氣"; // 預設值為 "未知天氣"
+
+  // 遍歷關鍵字進行匹配
+  for (const [keyword, output] of Object.entries(keywords)) {
+      const regex = new RegExp(keyword, 'g'); // 'g' 表示全局匹配
+      if (regex.test(text)) {
+          matchedWeather = output;
+          break; // 匹配到後退出循環
+      }
+  }
+  // 組合結果
+
+    // 回傳 JSON 數據
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.json(matchedWeather);
+    console.log(matchedWeather);
+
+  } catch (err) {
+    // 錯誤處理
+    res.status(500).send('資料庫查詢失敗');
+    console.log('error', err);
+  }
 });
 //儲存角色編號
 app.post('/charac', async (req, res) => {
