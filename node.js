@@ -153,7 +153,8 @@ app.get('/region', async (req, res) => {
     const data = results1[0];
 
     // 等待第二個查詢完成
-    const sql2 = 'SELECT Weather FROM weather WHERE CountyName = ? and TownName = ?';
+    const sql2 = 'SELECT Weather FROM weather WHERE CountyName = ? and TownName = ? and ObservationTime = (SELECT MAX(ObservationTime) FROM weather)';
+
     const [results2] = await db.promise().query(sql2, [data.country, data.region]);
 
     if (results2.length === 0) {
@@ -165,10 +166,10 @@ app.get('/region', async (req, res) => {
     console.log(data2.Weather)
     const keywords = {
       "晴": "weather1",
+      "雨": "weather5",
       "陰": "weather2",
       "霧": "weather3",
-      "霾": "weather4",
-      "雨": "weather5"
+      "霾": "weather4",      
   };
   
   // 模擬從資料庫獲取的天氣文本
@@ -211,7 +212,7 @@ app.get('/weather', async (req, res) => {
   console.log("test")
   try {
     // 等待第二個查詢完成
-    const sql2 = 'SELECT Weather FROM weather WHERE CountyName = ? and TownName = ?';
+    const sql2 = 'SELECT Weather FROM weather WHERE CountyName = ? and TownName = ? and ObservationTime = (SELECT MAX(ObservationTime) FROM weather)';
     const [results2] = await db.promise().query(sql2, [country, region]);
 
     if (results2.length === 0) {
@@ -223,10 +224,10 @@ app.get('/weather', async (req, res) => {
     console.log(data2.Weather)
     const keywords = {
       "晴": "weather1",
+      "雨": "weather5",
       "陰": "weather2",
       "霧": "weather3",
-      "霾": "weather4",
-      "雨": "weather5"
+      "霾": "weather4"
   };
   
   // 模擬從資料庫獲取的天氣文本
