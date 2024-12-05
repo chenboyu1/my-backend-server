@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
+const fetch = require('node-fetch');
 
 // 建立 Express 應用程式
 const app = express();
@@ -535,6 +536,49 @@ app.post('/affection', async (req, res) => {
     res.status(200).send('好感度更新成功');
   });
 });//從金錢數值推入到資料庫
+
+// API 路由
+app.post('/sendMessage', async (req, res) => {
+  const { message } = req.body;
+
+  try {
+    const response = await fetch('https://api.ai21.com/studio/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer AY7NUwcvBGJiT4Yy6jjcTT8uPqrAR1Jz'
+      },
+      body: JSON.stringify({
+        model: 'jamba-instruct-preview',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful chatbot with a background in earth sciences and a charming French accent.'
+          },
+          {
+            role: 'user',
+            content: message
+          }
+        ],
+        max_tokens: 100,
+        temperature: 0.8,
+        top_p: 0.9,
+        stop: '.'
+      })
+    });
+
+    const result = await response.json();
+    if (result.choices[0].message.content) {
+      const aiMessage = result.choices[0].message.content;
+      res.status(200).send(aiMessage);
+    } else {
+      res.status(500).send('API 調用失敗');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('伺服器錯誤');
+  }
+});
 
 // 啟動伺服器
 const PORT = 3000;
