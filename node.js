@@ -153,7 +153,7 @@ app.get('/region', async (req, res) => {
     const data = results1[0];
 
     // 等待第二個查詢完成
-    const sql2 = 'SELECT Weather FROM weather WHERE CountyName = ? and TownName = ? and ObservationTime = (SELECT MAX(ObservationTime) FROM weather)';
+    const sql2 = 'SELECT Weather FROM weather WHERE CountyName = ? and TownName = ? and ObservationTime = (SELECT MAX(ObservationTime) FROM weather) and weather <> -99';
 
     const [results2] = await db.promise().query(sql2, [data.country, data.region]);
 
@@ -212,7 +212,7 @@ app.get('/weather', async (req, res) => {
   console.log("test")
   try {
     // 等待第二個查詢完成
-    const sql2 = 'SELECT Weather FROM weather WHERE CountyName = ? and TownName = ? and ObservationTime = (SELECT MAX(ObservationTime) FROM weather)';
+    const sql2 = 'SELECT Weather FROM weather WHERE CountyName = ? and TownName = ? and ObservationTime = (SELECT MAX(ObservationTime) FROM weather) and weather <> -99';
     const [results2] = await db.promise().query(sql2, [country, region]);
 
     if (results2.length === 0) {
