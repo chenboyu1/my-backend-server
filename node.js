@@ -523,6 +523,21 @@ app.post('/money', async (req, res) => {
   });
 });//從金錢數值推入到資料庫
 
+const schedule = require('node-schedule');
+
+// 定時任務，每天晚上12點執行，分、時、日、月、星期
+schedule.scheduleJob('0 0 * * *', () => {
+  console.log('定時任務觸發，正在更新資料庫...');
+  const sql = 'UPDATE Money SET timer = 0, timer2 = 0, timer3 = 0, timer4 = 0';
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error('每日重置失敗:', err.sqlMessage || err);
+    } else {
+      console.log('每日任務數據成功重置為 0', result);
+    }
+  });
+});
+
 app.post('/affection', async (req, res) => {
   const { username, affection} = req.body;
 
